@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大埔滘天氣與潮汐</title>
+    <style>
+        body {
+            background-color: #1c1c1e;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .card {
+            background-color: #2c2c2e;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        h1 { font-size: 18px; color: #ff9f0a; margin-top: 0; }
+        .temp { font-size: 36px; font-weight: bold; margin: 10px 0; }
+        .info { font-size: 14px; color: #8e8e93; }
+    </style>
+</head>
+<body>
+
+    <h1>大埔滘即時天氣</h1>
+    <div class="card">
+        <div class="info">即時氣溫</div>
+        <div class="temp" id="temp">載入中...</div>
+        <div class="info" id="humidity">相對濕度：載入中...</div>
+    </div>
+
+    <script>
+        async function getWeather() {
+            try {
+                let response = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrh&lang=tc');
+                let data = await response.json();
+                
+                // 尋找大埔滘或鄰近氣溫
+                let tp = data.temperature.data.find(item => item.place === "大埔滘" || item.place === "大美督");
+                let tempVal = tp ? tp.value + "°C" : "暫無資料";
+                let humVal = data.humidity.data[0] ? data.humidity.data[0].value + "%" : "暫無資料";
+
+                document.getElementById('temp').innerText = tempVal;
+                document.getElementById('humidity').innerText = "相對濕度：" + humVal;
+            } catch (error) {
+                document.getElementById('temp').innerText = "載入失敗";
+            }
+        }
+        getWeather();
+    </script>
+</body>
+</html>
